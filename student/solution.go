@@ -10,73 +10,54 @@ import (
 	"01.gritlab.ax/git/mamberla/guess-it-2/ms"
 )
 
-// guessNextRange makes a guess about in which range the next number will be
-func guessNextRange(nums []int) (int, int) {
-
-	if len(nums) == 0 {
-		return 0, 0
-	}
-	if len(nums) == 1 {
-		return int(nums[0] - 10), int(nums[0] + 10)
-	}
-
-	numsF := toFloats(nums)
-	rng := guessing.Linear(numsF)
-
-	return rng[0], rng[1]
-}
-
 // isOutlier tells if a data point is not like the others
-func isOutlier(n int, nums []int) bool {
-	floats := toFloats(nums)
-	return ms.Abs(float64(n)-ms.Average(floats)) > ms.Variance(floats)*0.17
+func isOutlier(n float64, nums []float64) bool {
+	return ms.Abs(n-ms.Average(nums)) > ms.Variance(nums)*0.17
 }
 
-// toFloats converts a slice of ints to float64s
-func toFloats(nums []int) []float64 {
-	floats := make([]float64, len(nums))
-	for i, n := range nums {
-		floats[i] = float64(n)
-	}
-	return floats
-}
-
-func main() {
-	fmt.Println(os.Args)
-
-	if len(os.Args) != 1 {
-		fmt.Println("Usage: ./guess-it-2")
-		os.Exit(1)
-	}
-
+// readInputAndGuess expects numerical values from the standard input and guesses
+// a range for the next number
+func readInputAndGuess() {
 	scanner := bufio.NewScanner(os.Stdin)
-	numbers := []int{}
-	seen := 0
+	numbers := []float64{}
+	added := 0
+	all := 0
 	r1, r2 := 0, 0
 
 	for scanner.Scan() {
 		txt := scanner.Text()
-		num, err := strconv.Atoi(txt)
+		num, err := strconv.ParseFloat(txt, 64)
 		if err != nil {
 			fmt.Println(err.Error())
 			continue
 		}
+		all++
 
-		// Use old guess and ignore the input if it's an outlier
-		if seen > 6 && isOutlier(num, numbers) {
-			fmt.Printf("%v %v\n", r1+1, r2+1)
+		// If outlier: use old guess and ignore the input
+		if added > 6 && isOutlier(num, numbers) {
+			fmt.Printf("%v %v\n", r1, r2)
 			continue
 		}
 
-		// Use a data set max 61 long
-		if seen < 61 {
-			seen++
+		// Data set max 61 long
+		if added < 61 {
+			added++
 			numbers = append(numbers, num)
 		} else {
 			numbers = append(numbers[1:], num)
 		}
 
-		r1, r2 = guessNextRange(numbers)
+		r1, r2 = guessing.Linear(numbers)
+		//r1, r2 = all+104, all+196 // Wins datasets 4 and 5 every time
+
 		fmt.Printf("%v %v\n", r1, r2)
 	}
+}
+
+func main() {
+	if len(os.Args) != 1 {
+		fmt.Println("Usage: ./guess-it-2")
+		os.Exit(1)
+	}
+	readInputAndGuess()
 }

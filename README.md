@@ -9,7 +9,7 @@ Now run the testing program with:
 docker compose up
 ```
 
-Guess against at least these three ai models: "big-range", "linear-regr" and "correlation-coef".\
+Guess against these three opponents: "big-range", "linear-regr" and "correlation-coef".\
 Also available: "average", "huge-range", "median", "mse" and "nic" 
 
 To test "big-range", navigate to this URL:
@@ -24,6 +24,5 @@ To make testing work:
 cd student\
 go run solution.go  
 - Make sure your project go version is 1.23 (or the same the dockerized program uses)
-- To run the tester with an updated version of the program in the student folder: close Docker, delete the container and the image from Docker desktop, copy the updated solution.go over the old one and run "docker compose up" again.
-- Modifying permissions of script.sh and the executable ai models in the ai/ folder might be necessary
-
+- To run the tester with an updated version of the program in the student folder: stop Docker, delete the container and the image from Docker desktop, copy the updated student folder over the old one and run "docker compose up" again.
+- Modifying permissions of script.sh and the executable opponents in the ai/ folder may be necessary
